@@ -206,6 +206,36 @@ def forth_ski(expr: list) -> str:
     return " ".join(_forth_ski(expr))
 
 
+class SKI:
+    expr = []
+
+    def __init__(self, expr: str = None) -> None:
+        if expr:
+            self.expr = parse(expr)
+
+    def to_forth(self):
+        return forth_ski(self.expr)
+
+    def simplify(self):
+        self.expr = simplify(self.expr)
+
+    def reduce(self):
+        self.expr = repeat_reduce(self.expr)
+
+    def __str__(self) -> str:
+        return exprToStr(self.expr)
+
+    @classmethod
+    def from_str(cls, expr: str):
+        cls.expr = parse(expr)
+        return cls()
+
+    @classmethod
+    def from_list(cls, list: list):
+        cls.expr = list
+        return cls()
+
+
 def main():
     return
 
