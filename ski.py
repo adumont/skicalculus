@@ -1,4 +1,4 @@
-def reverse_copy(x: lst) -> lst:
+def reverse_copy(x: list) -> list:
     return [x[i] for i in range(len(x)-1, -1, -1)]
 
 def exprToStr(expr:list) -> str:
@@ -69,8 +69,7 @@ def SKI_solve(expr:list, vars:str|list):
     if type(vars) == str:
         vars = [vars]
 
-    vars = [ v for v in vars ] # copy
-    vars.reverse() # in place
+    vars = reverse_copy(vars)
 
     for v in vars:
         expr = abstract(expr, v)
@@ -192,8 +191,8 @@ def forth_ski(expr:list) -> str:
     def _forth_ski(expr:list) -> list:
         """ Converts a SKI expresion (as list) to a FORTH SKI sentence as list
         """
-        expr=[e for e in expr] # copy
-        expr.reverse()
+        expr=reverse_copy(expr)
+
         out=[]
         for c in expr:
             if type(c) == str:
