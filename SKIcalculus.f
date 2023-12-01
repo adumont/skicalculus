@@ -3,19 +3,24 @@
 \ (C) 2023 Alexandre Dumont <adumont@gmail.com>
 \ SPDX-License-Identifier: GPL-3.0-only
 
-\ Puts a empty header in the dictionary
-: ENTER, 4C C, COMPILE COLON ;
+\ ENTER, places a empty header in the dictionary
+\ $4C is 6502's JMP
+: ENTER, ( -- ) 4C C, COMPILE COLON ;
 
 \ Create a Function (or combinator)
 \ Combinators are Higher Order Functions, meaning
 \ they take a function as an Argument and return a function
 \ which we will eventually apply later using ")"
-: :FUNC CREATE ENTER, ] ;
+: :FUNC ( "name" -- ) CREATE ENTER, ] ;
+
 
 \ Application operator
-: ) EXEC ; \ Apply <=> "Application"
-: )) ) ) ;
-: ))) ) ) ) ;
+: )   ( xt -- xt ) EXEC  ; \ Apply <=> "Application"
+
+\ Syntactic sugar definitions
+: ))  ( xt -- xt ) ) )   ;
+: ))) ( xt -- xt ) ) ) ) ;
+
 
 \ Here we redefine I,
 \ no problem we can always use R> in DO LOOPs...
@@ -39,7 +44,7 @@
 
 \ Kite Combinator
 \ KIxy=y    λxy.y
-: KI I K ) ;
+I K )   CONSTANT   KI
 
 \ Cardinal combinator
 \ λfab.fba  Cfab=fba
@@ -62,8 +67,9 @@
   COMPILE EXIT
 ;
 
-
-:FUNC S ( X -- SX )
+\ S combinator
+\ λxyz.xz(yz)  Sxyz = xz(yz)
+:FUNC S
   HERE
   ENTER,
   COMPILE HERE
@@ -88,17 +94,20 @@
 :FUNC .T .( TRUE )  ;
 :FUNC .F .( FALSE ) ;
 
-\ BOOLEANS
+: BOOL CLS .F .T ;
 
-: T K ;
-: F KI ;
+\ BOOLEANS
+K  CONSTANT T    \ TRUE  λxy.x
+KI CONSTANT F    \ FALSE λxy.y
 
 \ Test with:
 \ .F .T K  )))  --> TRUE
 \ .F .T KI )))  --> FALSE
 
-\ Hack: we define the INCR function to check the church numerals
+\ We define the INCR function so we
+\ can check results of church numerals operations
 :FUNC INCR 1+ ;
+: CN 0 INCR ;
 
 \ Garbage collection
 DEFER _FORGET
@@ -251,14 +260,14 @@ K(3)(2) = 3     K is the Constant Function / TRUE Function
 : T K ;
 : F KI ;
 
-CLS .F .T T ))) --> TRUE
-CLS .F .T F ))) --> FALSE
+CLS .F .T T ))) CR --> TRUE
+CLS .F .T F ))) CR --> FALSE
 
 We can also use FALSE=SK. To prove it though, we do it like this:
 
 
 
-ok CLS .F .T     KI K    K S ))) ))) .s
+ok CLS .F .T   F T   K S ))) ))) CR
 FALSE ok
 
 --> This verifies that SK hence select KI from "KI and K", which applied to .T & .F ends selecting .F, which shows FALSE upon executing.

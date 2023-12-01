@@ -119,14 +119,16 @@ def reduce(expr: list) -> list:
                 if type(e) == str:
                     res.append(e)
                 else:
-                    res = res + [clean(reduce(e))]
+                    res = res + [clean(reduce(e))]  # simplify instead of clean?
             return res
 
     return clean(_reduce(expr))
 
 
-def repeat_reduce(expr: list) -> list:
+def repeat_reduce(expr: list, verbose=False) -> list:
     while True:
+        if verbose:
+            print(expr, " --> ", exprToStr(expr))
         new = reduce(expr)
         if new == expr:
             break
@@ -135,8 +137,9 @@ def repeat_reduce(expr: list) -> list:
 
 
 pairs = [
-    [["S", ["K", "K"], "I"], ["K"]],
-    [["S", "K"], ["K", "I"]],
+    [["S", ["K", "K"], "I"], ["K"]],  # S(KK)I = K
+    [["S", "K"], ["K", "I"]],  # SK = KI
+    [["S", "K", "K"], ["I"]],  # SKK = I
 ]
 
 
@@ -148,8 +151,6 @@ def simplify(expr: list) -> list:
                 expr[0 : len(b)] == b
             ):  # we apply simplification on the head of the list only
                 expr = c + expr[len(b) :]
-
-    # print(expr)
 
     res = []
     for e in expr:
@@ -183,8 +184,8 @@ def parse(expr: str) -> list:
 
 def from_lambda(expr: str) -> [str, str]:
     """returns an SKI expression and variables from a string of a lambda abstraction"""
-    vars, body = list(map(parse, expr.replace("\\", "").split(".")))
-    return SKI_solve(vars=vars, expr=body), vars
+    vars, body = list(map(parse, expr.replace("\\", "").replace("λ", "").split(".")))
+    return simplify(SKI_solve(vars=vars, expr=body)), vars
 
 
 def forth_ski(expr: list) -> str:
@@ -224,6 +225,12 @@ class SKI:
 
     def __str__(self) -> str:
         return exprToStr(self.expr)
+
+    def __mul__(self, other_ski):
+        """Allows us to use A * B between two SKI objects,
+        returning AB"""
+        self.expr = clean([self.expr] + other_ski.expr)
+        return self
 
     @classmethod
     def from_str(cls, expr: str):
