@@ -72,7 +72,7 @@ def SKI_solve(expr: list, vars: str | list):
     for v in vars:
         expr = abstract(expr, v)
 
-    return expr
+    return simplify(expr)
 
 
 def clean(expr: list) -> list:
@@ -140,6 +140,7 @@ pairs = [
     [["S", ["K", "K"], "I"], ["K"]],  # S(KK)I = K
     [["S", "K"], ["K", "I"]],  # SK = KI
     [["S", "K", "K"], ["I"]],  # SKK = I
+    [["S", ["S", ["K", "S"], "K"], ["K", "I"]], ["I"]],  # S(S(KS)K)(KI)xy -> xy
 ]
 
 
@@ -185,7 +186,7 @@ def parse(expr: str) -> list:
 def from_lambda(expr: str) -> [str, str]:
     """returns an SKI expression and variables from a string of a lambda abstraction"""
     vars, body = list(map(parse, expr.replace("\\", "").replace("λ", "").split(".")))
-    return simplify(SKI_solve(vars=vars, expr=body)), vars
+    return SKI_solve(vars=vars, expr=body), vars
 
 
 def forth_ski(expr: list) -> str:
