@@ -455,7 +455,7 @@ TRUE ok
 
 \ EQUALITY??
 
-EQ = XOR = \pq.pq(NOT q)
+EQ = XNOR = \pq.pq(NOT q)
 
 Q P EQ --> Q EQ(P) --> Q NOT ) Q P ))
 
