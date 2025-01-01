@@ -189,7 +189,7 @@ def from_lambda(expr: str) -> [str, str]:
     return SKI_solve(vars=vars, expr=body), vars
 
 
-def forth_ski(expr: list) -> str:
+def forth_ski(expr: list, simplify: bool = False) -> str:
     """Converts a SKI expresion (as list) to a FORTH SKI sentence as str"""
 
     def _forth_ski(expr: list) -> list:
@@ -205,7 +205,24 @@ def forth_ski(expr: list) -> str:
         out.append(")" * (len(expr) - 1))
         return out
 
-    return " ".join(_forth_ski(expr))
+    def _simplify(s: str, simplify: bool) -> str:
+        if not simplify:
+            return s
+
+        pairs = [
+            ["I K )", "F"],
+            ["S K )", "KS"],
+            ["K K )", "KK"],
+            ["F K )", "KF"],
+            ["KK I S ))", "1ST"],
+            ["KF I S ))", "2ND"],
+        ]
+
+        for a, b in pairs:
+            s = s.replace(a, b)
+        return s
+
+    return _simplify(" ".join(_forth_ski(expr)), simplify=simplify)
 
 
 class SKI:

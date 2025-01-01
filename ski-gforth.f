@@ -57,6 +57,7 @@ I K )   CONSTANT   KI
 :FUNC .F ." FALSE " ;
 
 : BOOL .F .T ;
+: .B .F .T ROT ))) ;
 
 \ BOOLEANS
 K  CONSTANT T    \ TRUE  λxy.x
@@ -70,4 +71,15 @@ KI CONSTANT F    \ FALSE λxy.y
 \ can check results of church numerals operations
 :FUNC INCR 1+ ;
 : CN 0 INCR ;
+
+: .N CN ROT )) . ;    \ Prints a Church numeral
+: .V >R CN K R@ ))) . CN KI R> ))) . ;   \  Prints a pair of two Church numerals
+
+\ Some shortcuts
+S K ) CONSTANT KS
+K K ) CONSTANT KK
+F K ) CONSTANT KF   \ I K ) K )
+
+K K ) I S ))        CONSTANT 1ST    \ SI(KK)
+I K ) K ) I S ))    CONSTANT 2ND    \ SI(K(KI))
 
