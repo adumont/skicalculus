@@ -1,0 +1,38 @@
+cd projects/emu6502
+clear; gforth emu6502.f -e ski
+
+\ Factorial Demo on AlexForth 6502
+
+: .N CN ROT )) . ;    \ Prints a Church numeral
+F K ) CONSTANT KF
+K K ) I S ))        CONSTANT 1ST    \ SI(KK)
+I K ) K ) I S ))    CONSTANT 2ND    \ SI(K(KI))
+
+KI                  CONSTANT ZERO
+I                   CONSTANT ONE
+ZERO .N 0
+ONE .N 1
+K S K ) S )) S ) CONSTANT SUCC
+I K S K ) S )) S )) CONSTANT TWO
+TWO SUCC ) CONSTANT THREE
+TWO TWO ) CONSTANT FOUR 
+K K ) K I S ) K ) S )) S K ) S )) K K ) S )) S K ) S )) S ))  CONSTANT PAIR
+
+ONE ONE PAIR ))   CONSTANT (1,1)
+(1,1) .V 1 1
+
+I K ) K S K ) S )) K K ) S )) S K ) S )) S )) CONSTANT MUL
+2ND 1ST MUL K ) S )) S )) 1ST SUCC K ) S )) PAIR K ) S )) S )) CONSTANT PHI
+KF (1,1) K ) PHI K ) I S )) S )) S ))    CONSTANT FACT
+
+MARKER
+
+FOUR FACT ) .N
+FOUR .S
+FACT .S
+) .S
+.N
+
+\ 2^3 = 8, 8! = 40320
+TWO THREE ) FACT ) .N
+
